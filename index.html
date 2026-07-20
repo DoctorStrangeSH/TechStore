@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TechStore — Панель управления</title>
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+    
+    <!-- Bootstrap 5.3 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js" defer></script>
+    <!-- Кастомные стили -->
+    <link href="style.css" rel="stylesheet">
+</head>
+<body>
+    <!-- Оверлей для мобильного меню -->
+    <div class="sidebar-overlay" id="sidebarOverlay" aria-hidden="true"></div>
+
+    <!-- Основной контейнер -->
+    <div class="d-flex" id="wrapper">
+        
+        <!-- Сайдбар -->
+        <aside class="sidebar bg-dark text-white d-flex flex-column flex-shrink-0" id="sidebar" aria-label="Боковое меню">
+            <!-- Логотип -->
+            <div class="p-3 border-bottom border-secondary d-flex align-items-center justify-content-between">
+                <a href="#" class="d-flex align-items-center text-white text-decoration-none">
+                    <i class="bi bi-cpu-fill fs-4 me-2 text-primary"></i>
+                    <span class="fs-5 fw-bold sidebar-text">TechStore</span>
+                </a>
+                <button class="btn-close btn-close-white d-md-none sidebar-close-btn" aria-label="Закрыть меню"></button>
+            </div>
+            <small class="text-secondary px-3 pb-2 sidebar-text">Панель управления</small>
+            
+            <!-- Навигация -->
+            <nav class="flex-grow-1 overflow-auto">
+                <ul class="nav flex-column p-2">
+                    <li class="nav-item">
+                        <a href="#" class="nav-link active rounded-3" data-page="dashboard" aria-current="page">
+                            <i class="bi bi-speedometer2 me-2"></i> <span class="sidebar-text">Дашборд</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link text-white rounded-3" data-page="orders">
+                            <i class="bi bi-cart-check me-2"></i> <span class="sidebar-text">Заказы</span>
+                            <span class="badge bg-danger rounded-pill ms-auto">24</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link text-white rounded-3" data-page="products">
+                            <i class="bi bi-box-seam me-2"></i> <span class="sidebar-text">Товары</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link text-white rounded-3" data-page="customers">
+                            <i class="bi bi-people me-2"></i> <span class="sidebar-text">Клиенты</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link text-white rounded-3" data-page="analytics">
+                            <i class="bi bi-graph-up me-2"></i> <span class="sidebar-text">Аналитика</span>
+                        </a>
+                    </li>
+                    <li><hr class="my-2 border-secondary"></li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link text-white rounded-3" data-page="settings">
+                            <i class="bi bi-gear me-2"></i> <span class="sidebar-text">Настройки</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link text-white rounded-3" data-page="help">
+                            <i class="bi bi-question-circle me-2"></i> <span class="sidebar-text">Помощь</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+            
+            <!-- Профиль в сайдбаре -->
+            <div class="p-3 border-top border-secondary">
+                <div class="d-flex align-items-center">
+                    <img src="https://placehold.co/40x40/6c757d/white?text=ВШ" 
+                         alt="Владислав Ш." class="rounded-circle me-2" width="40" height="40">
+                    <div class="small sidebar-text">
+                        <p class="mb-0 fw-semibold">Владислав Ш.</p>
+                        <p class="mb-0 text-secondary">Администратор</p>
+                    </div>
+                    <a href="#" class="ms-auto text-secondary" title="Выйти">
+                        <i class="bi bi-box-arrow-right"></i>
+                    </a>
+                </div>
+            </div>
+        </aside>
+        
+        <!-- Основной контент -->
+        <div class="main-content flex-grow-1 d-flex flex-column min-vh-100">
+            
+            <!-- Топбар -->
+            <header class="topbar bg-white border-bottom px-3 px-md-4 py-2 d-flex align-items-center gap-2 gap-md-3">
+                <!-- Кнопка меню (только на мобилках) -->
+                <button class="btn btn-outline-secondary btn-sm d-flex align-items-center d-md-none sidebar-toggle-btn" 
+                        aria-label="Открыть меню" title="Меню">
+                    <i class="bi bi-list fs-5"></i>
+                </button>
+                
+                <!-- Хлебные крошки (скрыты на мобилках) -->
+                <nav aria-label="breadcrumb" class="d-none d-md-block">
+                    <ol class="breadcrumb mb-0" id="breadcrumb">
+                        <li class="breadcrumb-item"><a href="#" data-page="dashboard">Главная</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">Дашборд</li>
+                    </ol>
+                </nav>
+                
+                <!-- Поиск (скрыт на мобилках по умолчанию) -->
+                <div class="search-container ms-auto me-2 d-none d-md-block">
+                    <div class="input-group input-group-sm" style="max-width: 280px;">
+                        <span class="input-group-text bg-white border-end-0 rounded-start-pill">
+                            <i class="bi bi-search text-muted"></i>
+                        </span>
+                        <input class="form-control border-start-0 rounded-end-pill" type="search" 
+                               id="orderSearch" placeholder="Поиск по заказам..." aria-label="Поиск">
+                    </div>
+                </div>
+                
+                <!-- Кнопка поиска для мобилок -->
+                <button class="btn btn-outline-secondary btn-sm d-md-none ms-auto mobile-search-toggle-btn" 
+                        aria-label="Поиск" title="Поиск">
+                    <i class="bi bi-search"></i>
+                </button>
+                
+                <!-- Уведомления -->
+                <div class="dropdown">
+                    <button class="btn btn-outline-secondary btn-sm position-relative" type="button" 
+                            data-bs-toggle="dropdown" aria-expanded="false" aria-label="Уведомления (3 новых)" title="Уведомления">
+                        <i class="bi bi-bell fs-5"></i>
+                        <span class="position-absolute top-0 start-100 translate-middle p-1 bg-danger border border-light rounded-circle">
+                            <span class="visually-hidden">Новые уведомления</span>
+                        </span>
+                    </button>
+                    <div class="dropdown-menu dropdown-menu-end shadow-sm p-0" style="width: 320px; max-height: 400px; overflow-y: auto;">
+                        <div class="px-3 py-2 border-bottom d-flex justify-content-between align-items-center">
+                            <span class="fw-semibold small">Уведомления</span>
+                            <span class="badge bg-danger rounded-pill">3 новых</span>
+                        </div>
+                        <a href="#" class="dropdown-item d-flex gap-2 py-2 border-bottom">
+                            <div class="flex-shrink-0"><i class="bi bi-cart-check-fill text-success fs-5"></i></div>
+                            <div class="small">
+                                <p class="mb-0 fw-semibold">Заказ #1089 оформлен</p>
+                                <p class="mb-0 text-muted">2 минуты назад</p>
+                            </div>
+                        </a>
+                        <a href="#" class="dropdown-item d-flex gap-2 py-2 border-bottom">
+                            <div class="flex-shrink-0"><i class="bi bi-exclamation-triangle-fill text-warning fs-5"></i></div>
+                            <div class="small">
+                                <p class="mb-0 fw-semibold">Низкий остаток: iPhone 15</p>
+                                <p class="mb-0 text-muted">1 час назад</p>
+                            </div>
+                        </a>
+                        <a href="#" class="dropdown-item d-flex gap-2 py-2">
+                            <div class="flex-shrink-0"><i class="bi bi-star-fill text-primary fs-5"></i></div>
+                            <div class="small">
+                                <p class="mb-0 fw-semibold">Новый отзыв 5★</p>
+                                <p class="mb-0 text-muted">3 часа назад</p>
+                            </div>
+                        </a>
+                        <div class="px-3 py-2 border-top text-center">
+                            <a href="#" class="small text-decoration-none">Все уведомления →</a>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Переключатель темы -->
+                <button class="btn btn-outline-secondary btn-sm d-flex align-items-center theme-toggle-btn" 
+                        aria-label="Переключить тему" title="Переключить тему">
+                    <i class="bi bi-moon-stars-fill fs-5"></i>
+                </button>
+                
+                <!-- Профиль -->
+                <div class="dropdown d-none d-sm-block">
+                    <button class="btn btn-light btn-sm d-flex align-items-center gap-2 dropdown-toggle" type="button" 
+                            data-bs-toggle="dropdown" aria-expanded="false" aria-label="Профиль пользователя">
+                        <img src="https://placehold.co/32x32/0d6efd/white?text=ВШ" 
+                             alt="Владислав Ш." class="rounded-circle" width="32" height="32">
+                        <span class="d-none d-md-inline small fw-semibold">Владислав</span>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end shadow-sm">
+                        <li><a class="dropdown-item" href="#"><i class="bi bi-person me-2"></i>Профиль</a></li>
+                        <li><a class="dropdown-item" href="#"><i class="bi bi-gear me-2"></i>Настройки</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item text-danger" href="#"><i class="bi bi-box-arrow-right me-2"></i>Выйти</a></li>
+                    </ul>
+                </div>
+            </header>
+            
+            <!-- Мобильная строка поиска (скрыта по умолчанию) -->
+            <div class="mobile-search-bar bg-white border-bottom p-2" id="mobileSearchBar" style="display: none;">
+                <div class="input-group input-group-sm">
+                    <span class="input-group-text bg-white border-end-0">
+                        <i class="bi bi-search text-muted"></i>
+                    </span>
+                    <input class="form-control border-start-0" type="search" 
+                           id="mobileOrderSearch" placeholder="Поиск по заказам, товарам..." aria-label="Мобильный поиск">
+                    <button class="btn btn-outline-secondary btn-sm mobile-search-close-btn" type="button" aria-label="Закрыть поиск">
+                        <i class="bi bi-x-lg"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Контент дашборда -->
+            <main class="flex-grow-1 p-3 p-md-4 bg-light">
+                
+                <!-- Заголовок страницы -->
+                <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-3 mb-md-4">
+                    <div>
+                        <h1 class="h3 fw-bold mb-1">Дашборд</h1>
+                        <p class="text-muted small mb-0">Обзор показателей магазина за сегодня</p>
+                    </div>
+                    <button class="btn btn-outline-secondary btn-sm mt-2 mt-md-0 rounded-pill px-3" id="exportCSV">
+                        <i class="bi bi-download me-1"></i> Экспорт CSV
+                    </button>
+                </div>
+                
+                <!-- KPI-карточки -->
+                <div class="row g-2 g-md-3 mb-3 mb-md-4">
+                    <div class="col-6 col-md-6 col-lg-3">
+                        <div class="card border-0 shadow-sm h-100 kpi-card">
+                            <div class="card-body p-2 p-md-4">
+                                <div class="d-flex justify-content-between align-items-start mb-2 mb-md-3">
+                                    <div class="kpi-icon bg-primary bg-opacity-10 text-primary rounded-3 d-flex align-items-center justify-content-center" 
+                                         style="width: 36px; height: 36px; min-width: 36px;">
+                                        <i class="bi bi-wallet2 fs-6 fs-md-5"></i>
+                                    </div>
+                                    <span class="badge bg-success bg-opacity-10 text-success rounded-pill small d-none d-sm-inline">
+                                        <i class="bi bi-arrow-up-short"></i> 12.5%
+                                    </span>
+                                </div>
+                                <p class="text-muted small mb-0 mb-md-1">Выручка</p>
+                                <p class="fs-5 fs-md-4 fw-bold mb-0"><span class="counter" data-target="847290">0</span> ₽</p>
+                                <p class="text-muted small mb-0 mt-1 d-none d-md-block">Сегодня</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-6 col-md-6 col-lg-3">
+                        <div class="card border-0 shadow-sm h-100 kpi-card">
+                            <div class="card-body p-2 p-md-4">
+                                <div class="d-flex justify-content-between align-items-start mb-2 mb-md-3">
+                                    <div class="kpi-icon bg-success bg-opacity-10 text-success rounded-3 d-flex align-items-center justify-content-center" 
+                                         style="width: 36px; height: 36px; min-width: 36px;">
+                                        <i class="bi bi-cart-check fs-6 fs-md-5"></i>
+                                    </div>
+                                    <span class="badge bg-success bg-opacity-10 text-success rounded-pill small d-none d-sm-inline">
+                                        <i class="bi bi-arrow-up-short"></i> 8.3%
+                                    </span>
+                                </div>
+                                <p class="text-muted small mb-0 mb-md-1">Заказы</p>
+                                <p class="fs-5 fs-md-4 fw-bold mb-0"><span class="counter" data-target="247">0</span></p>
+                                <p class="text-muted small mb-0 mt-1 d-none d-md-block">Сегодня</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-6 col-md-6 col-lg-3">
+                        <div class="card border-0 shadow-sm h-100 kpi-card">
+                            <div class="card-body p-2 p-md-4">
+                                <div class="d-flex justify-content-between align-items-start mb-2 mb-md-3">
+                                    <div class="kpi-icon bg-info bg-opacity-10 text-info rounded-3 d-flex align-items-center justify-content-center" 
+                                         style="width: 36px; height: 36px; min-width: 36px;">
+                                        <i class="bi bi-people fs-6 fs-md-5"></i>
+                                    </div>
+                                    <span class="badge bg-success bg-opacity-10 text-success rounded-pill small d-none d-sm-inline">
+                                        <i class="bi bi-arrow-up-short"></i> 5.1%
+                                    </span>
+                                </div>
+                                <p class="text-muted small mb-0 mb-md-1">Клиенты</p>
+                                <p class="fs-5 fs-md-4 fw-bold mb-0"><span class="counter" data-target="1842">0</span></p>
+                                <p class="text-muted small mb-0 mt-1 d-none d-md-block">За месяц</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-6 col-md-6 col-lg-3">
+                        <div class="card border-0 shadow-sm h-100 kpi-card">
+                            <div class="card-body p-2 p-md-4">
+                                <div class="d-flex justify-content-between align-items-start mb-2 mb-md-3">
+                                    <div class="kpi-icon bg-warning bg-opacity-10 text-warning rounded-3 d-flex align-items-center justify-content-center" 
+                                         style="width: 36px; height: 36px; min-width: 36px;">
+                                        <i class="bi bi-arrow-return-left fs-6 fs-md-5"></i>
+                                    </div>
+                                    <span class="badge bg-danger bg-opacity-10 text-danger rounded-pill small d-none d-sm-inline">
+                                        <i class="bi bi-arrow-down-short"></i> 2.1%
+                                    </span>
+                                </div>
+                                <p class="text-muted small mb-0 mb-md-1">Возвраты</p>
+                                <p class="fs-5 fs-md-4 fw-bold mb-0"><span class="counter-decimal" data-target="3.2">0</span>%</p>
+                                <p class="text-muted small mb-0 mt-1 d-none d-md-block">От всех заказов</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Таблица и график -->
+                <div class="row g-2 g-md-3">
+                    <!-- Таблица заказов -->
+                    <div class="col-lg-8">
+                        <div class="card border-0 shadow-sm">
+                            <div class="card-header bg-white border-bottom d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center p-2 p-md-4">
+                                <h5 class="fw-bold mb-2 mb-md-0 fs-6 fs-md-5">
+                                    <i class="bi bi-cart-check me-2 text-primary"></i>Последние заказы
+                                </h5>
+                                <div class="d-flex gap-2 w-100 w-md-auto">
+                                    <select class="form-select form-select-sm flex-grow-1 flex-md-grow-0" id="statusFilter" aria-label="Фильтр по статусу">
+                                        <option value="all">Все статусы</option>
+                                        <option value="pending">Ожидает</option>
+                                        <option value="processing">В обработке</option>
+                                        <option value="shipped">В пути</option>
+                                        <option value="delivered">Доставлен</option>
+                                        <option value="cancelled">Отменён</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <!-- Десктопная таблица -->
+                            <div class="table-responsive d-none d-md-block">
+                                <table class="table table-hover align-middle mb-0">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th scope="col" class="ps-4">Заказ</th>
+                                            <th scope="col">Клиент</th>
+                                            <th scope="col">Дата</th>
+                                            <th scope="col">Сумма</th>
+                                            <th scope="col">Статус</th>
+                                            <th scope="col" class="text-end pe-4">Действия</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="orders-table-body"></tbody>
+                                </table>
+                            </div>
+                            
+                            <!-- Мобильные карточки заказов -->
+                            <div class="d-md-none" id="orders-cards-container"></div>
+                            
+                            <!-- Пагинация -->
+                            <div class="card-footer bg-white border-top d-flex justify-content-between align-items-center p-2 p-md-3">
+                                <small class="text-muted" id="orders-info">Показано 1–5 из 10</small>
+                                <nav>
+                                    <ul class="pagination pagination-sm mb-0" id="orders-pagination"></ul>
+                                </nav>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- График продаж -->
+                    <div class="col-lg-4">
+                        <div class="card border-0 shadow-sm h-100">
+                            <div class="card-header bg-white border-bottom d-flex justify-content-between align-items-center p-2 p-md-4">
+                                <h5 class="fw-bold mb-0 fs-6 fs-md-5">
+                                    <i class="bi bi-graph-up me-2 text-success"></i>Продажи
+                                </h5>
+                                <div class="btn-group btn-group-sm" role="group" id="chart-tabs">
+                                    <button type="button" class="btn btn-outline-primary active" data-period="week">Нед</button>
+                                    <button type="button" class="btn btn-outline-primary" data-period="month">Мес</button>
+                                </div>
+                            </div>
+                            <div class="card-body p-2 p-md-4 d-flex align-items-center">
+                                <canvas id="salesChart" width="100%" height="250"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Топ-товары -->
+                <div class="row g-2 g-md-3 mt-2 mt-md-3">
+                    <div class="col-12">
+                        <div class="card border-0 shadow-sm">
+                            <div class="card-header bg-white border-bottom d-flex justify-content-between align-items-center p-2 p-md-4">
+                                <h5 class="fw-bold mb-0 fs-6 fs-md-5">
+                                    <i class="bi bi-trophy me-2 text-warning"></i>Топ-товары месяца
+                                </h5>
+                            </div>
+                            <div class="card-body p-2 p-md-4">
+                                <div class="row g-2 g-md-3" id="top-products-container"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+            </main>
+            
+            <!-- Футер -->
+            <footer class="bg-white border-top px-3 px-md-4 py-2 small text-muted">
+                <div class="d-flex flex-column flex-md-row justify-content-between align-items-center">
+                    <span class="mb-1 mb-md-0">© 2026 TechStore. Все права защищены.</span>
+                    <span>Версия 2.0.0</span>
+                </div>
+            </footer>
+            
+        </div>
+    </div>
+    
+    <!-- Модальное окно заказа -->
+    <div class="modal fade" id="orderModal" tabindex="-1" aria-labelledby="orderModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+            <div class="modal-content border-0 shadow-lg">
+                <div class="modal-header bg-light border-bottom">
+                    <h5 class="modal-title fw-bold" id="orderModalLabel">
+                        <i class="bi bi-cart-check me-2 text-primary"></i>Детали заказа
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
+                </div>
+                
+                <div class="modal-body p-3 p-md-4">
+                    <div class="d-flex flex-wrap justify-content-between align-items-center mb-3 mb-md-4">
+                        <div>
+                            <h4 class="fw-bold mb-1 fs-5 fs-md-4" id="modal-order-id">#1089</h4>
+                            <p class="text-muted small mb-0" id="modal-order-date">23 июня 2026</p>
+                        </div>
+                        <span class="badge fs-6 rounded-pill mt-2 mt-md-0" id="modal-order-status">Доставлен</span>
+                    </div>
+                    
+                    <div class="row g-2 g-md-3 mb-3 mb-md-4">
+                        <div class="col-12 col-md-6">
+                            <div class="p-2 p-md-3 bg-light rounded-3">
+                                <small class="text-muted d-block mb-1">Клиент</small>
+                                <span class="fw-semibold" id="modal-customer">Анна Михайлова</span>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <div class="p-2 p-md-3 bg-light rounded-3">
+                                <small class="text-muted d-block mb-1">Email / Телефон</small>
+                                <span class="fw-semibold" id="modal-contact">anna@example.com</span>
+                                <br>
+                                <small class="text-muted" id="modal-phone">+7 (999) 123-45-67</small>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row g-2 g-md-3 mb-3 mb-md-4">
+                        <div class="col-12 col-md-6">
+                            <div class="p-2 p-md-3 bg-light rounded-3">
+                                <small class="text-muted d-block mb-1"><i class="bi bi-geo-alt me-1"></i>Адрес доставки</small>
+                                <span class="fw-semibold small" id="modal-address">Москва, ул. Тверская, 12, кв. 45</span>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <div class="p-2 p-md-3 bg-light rounded-3">
+                                <small class="text-muted d-block mb-1"><i class="bi bi-credit-card me-1"></i>Способ оплаты</small>
+                                <span class="fw-semibold small" id="modal-payment">Карта Visa **** 4567</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <h6 class="fw-bold mb-2 mb-md-3"><i class="bi bi-box-seam me-2"></i>Товары в заказе</h6>
+                        <div class="table-responsive">
+                            <table class="table table-sm table-borderless bg-light rounded-3 overflow-hidden">
+                                <thead class="table-secondary">
+                                    <tr>
+                                        <th class="ps-3">Товар</th>
+                                        <th>Кол-во</th>
+                                        <th class="text-end pe-3">Цена</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="modal-order-items"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                    
+                    <div class="d-flex justify-content-between align-items-center p-2 p-md-3 bg-primary bg-opacity-10 rounded-3">
+                        <span class="fw-bold">Итого к оплате</span>
+                        <span class="fs-5 fw-bold text-primary" id="modal-total">47 990 ₽</span>
+                    </div>
+                </div>
+                
+                <div class="modal-footer bg-light border-top">
+                    <div class="d-flex flex-wrap gap-2">
+                        <button class="btn btn-outline-success rounded-pill px-3 btn-action" data-action="confirm">
+                            <i class="bi bi-check-lg me-1"></i> Подтвердить
+                        </button>
+                        <button class="btn btn-outline-warning rounded-pill px-3 btn-action" data-action="edit">
+                            <i class="bi bi-pencil me-1"></i> Изменить
+                        </button>
+                        <button class="btn btn-outline-danger rounded-pill px-3 btn-action" data-action="cancel">
+                            <i class="bi bi-x-lg me-1"></i> Отменить
+                        </button>
+                    </div>
+                    <button type="button" class="btn btn-secondary rounded-pill px-4 mt-2 mt-md-0" data-bs-dismiss="modal">Закрыть</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Тосты -->
+    <div class="toast-container position-fixed bottom-0 end-0 p-3" id="toastContainer"></div>
+    
+    <!-- Скрипты -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="js/data.js"></script>
+    <script src="js/main.js"></script>
+    <script src="js/theme.js"></script>
+</body>
+</html>
